@@ -19,7 +19,7 @@ from_ine <-
     mutate(id = as.numeric(id)) |> 
     mutate(desc = case_when(
       id == 1 ~ 'Alimentos',
-      id == 2 ~ 'Licores y tabaco',
+      id == 2 ~ 'Licores',
       id == 3 ~ 'Vestimenta',
       id == 4 ~ 'Vivienda',
       id == 5 ~ 'Muebles',
@@ -32,25 +32,40 @@ from_ine <-
       id == 12 ~ 'Otros',
       TRUE ~ desc
     )) |> 
-    mutate(month = as_factor(month), 
+    mutate(month = as_factor(str_to_title(month)), 
            desc = as_factor(desc)) 
 }
 ```
 
 ```{r}
+year_2019 <- 'https://www.ine.gob.gt/sistema/uploads/2020/01/07/20200107183958VEdqlo5oBmhO5cvKTQhYRYj2D05gxCla.xls'
 year_2020 <- 'https://www.ine.gob.gt/sistema/uploads/2021/01/07/20210107181008hU1E5mBYrw7qBqdWxofaZsj4rULMDiJe.xls'
 year_2021 <- 'https://www.ine.gob.gt/sistema/uploads/2022/01/06/20220106212952xoNyfwpIfoBW1kdUPmnw7MVW98ZCTepI.xls'
 year_2022 <- 'https://www.ine.gob.gt/sistema/uploads/2022/06/07/20220607184539YNiFivgBo98JEbaVMRUhaFG9wPw9ePe9.xls'
 ```
 
 ```{r}
-cpi <- 
-  from_ine(year_2020) |> 
+cpi_raw <- 
+  from_ine(year_2019) |> 
+  bind_rows(from_ine(year_2020)) |> 
   bind_rows(from_ine(year_2021)) |> 
   bind_rows(from_ine(year_2022))
 ```
 
 ```{r}
-cpi |> 
-  pivot_wider()
+cpi <- 
+  cpi_raw |> 
+  select(!id) |> 
+  pivot_wider(names_from = desc, 
+              values_from = cpi) |> 
+  mutate(across(where(is.numeric), ~ 100 * (log(.) - lag(log(.), 1)))) |> 
+  filter(year != 2019) |>
+  pivot_longer(!c(year, month), 
+               names_to = 'expense', 
+               values_to = 'rate') |> 
+  mutate(expense = as_factor(expense))
+```
+
+```{r}
+
 ```
