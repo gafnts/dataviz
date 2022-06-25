@@ -69,10 +69,11 @@ cpi <-
 ```
 
 ```{r}
-cpi |> 
+plot <- 
+  cpi |> 
   ggplot(aes(expense, rate)) +
   geom_col() +
-  labs(title = "{closest_state}") +
+  labs(subtitle = "{closest_state}") +
   transition_states(
     period,
     transition_length = 5,
@@ -80,4 +81,13 @@ cpi |>
   enter_grow(size = 1) + 
   exit_shrink(size = 2) +
   ease_aes('elastic-in-out')
+
+animation <- 
+  animate(plot, 
+          height = 6, width = 6, units = "in", res = 300,
+          nframes = 100, fps = 30, renderer = av_renderer())
+```
+
+```{r}
+anim_save("output.mp4", animation)
 ```
