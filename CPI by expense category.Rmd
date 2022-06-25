@@ -16,7 +16,7 @@ from_ine <-
            desc = descripcion,
            cpi = rep) |> 
     filter(str_length(id) == 2) |> 
-    mutate(id = as.numeric(id)) |> 
+    mutate(id = parse_number(id)) |> 
     mutate(desc = case_when(
       id == 1 ~ 'Alimentos',
       id == 2 ~ 'Licores',
@@ -63,9 +63,21 @@ cpi <-
   pivot_longer(!c(year, month), 
                names_to = 'expense', 
                values_to = 'rate') |> 
-  mutate(expense = as_factor(expense))
+  mutate(expense = as_factor(expense),
+         year = parse_number(year),
+         period = as_factor(paste(month, year)))
 ```
 
 ```{r}
-
+cpi |> 
+  ggplot(aes(expense, rate)) +
+  geom_col() +
+  labs(title = "{closest_state}") +
+  transition_states(
+    period,
+    transition_length = 5,
+    state_length = 1) +
+  enter_grow(size = 1) + 
+  exit_shrink(size = 2) +
+  ease_aes('elastic-in-out')
 ```
