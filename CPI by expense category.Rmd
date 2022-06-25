@@ -5,22 +5,52 @@ pacman::p_load(tidyverse, rio, here, janitor, gganimate)
 ```
 
 ```{r}
-test <- 
-  import('https://www.ine.gob.gt/sistema/uploads/2021/01/07/20210107181008hU1E5mBYrw7qBqdWxofaZsj4rULMDiJe.xls') |> 
-  as_tibble() |> 
-  clean_names() |> 
-  select(year = ano,
-         month = mes, 
-         id = codigo,
-         desc = descripcion,
-         cpi = rep) 
+from_ine <- 
+  function(path) {
+   import(path) |> 
+    as_tibble() |> 
+    clean_names() |> 
+    select(year = ano,
+           month = mes, 
+           id = codigo,
+           desc = descripcion,
+           cpi = rep) |> 
+    filter(str_length(id) == 2) |> 
+    mutate(id = as.numeric(id)) |> 
+    mutate(desc = case_when(
+      id == 1 ~ 'Alimentos',
+      id == 2 ~ 'Licores y tabaco',
+      id == 3 ~ 'Vestimenta',
+      id == 4 ~ 'Vivienda',
+      id == 5 ~ 'Muebles',
+      id == 6 ~ 'Salud',
+      id == 7 ~ 'Transporte',
+      id == 8 ~ 'Comunicaciones',
+      id == 9 ~ 'Recreación',
+      id == 10 ~ 'Educación',
+      id == 11 ~ 'Restaurantes',
+      id == 12 ~ 'Otros',
+      TRUE ~ desc
+    )) |> 
+    mutate(month = as_factor(month), 
+           desc = as_factor(desc)) 
+}
 ```
 
 ```{r}
-test |> 
-  filter(str_length(id) == 2) |> 
-  mutate(id = as.numeric(id)) |> 
-  mutate(desc = case_when(
-    id == 1
-  ))
+year_2020 <- 'https://www.ine.gob.gt/sistema/uploads/2021/01/07/20210107181008hU1E5mBYrw7qBqdWxofaZsj4rULMDiJe.xls'
+year_2021 <- 'https://www.ine.gob.gt/sistema/uploads/2022/01/06/20220106212952xoNyfwpIfoBW1kdUPmnw7MVW98ZCTepI.xls'
+year_2022 <- 'https://www.ine.gob.gt/sistema/uploads/2022/06/07/20220607184539YNiFivgBo98JEbaVMRUhaFG9wPw9ePe9.xls'
+```
+
+```{r}
+cpi <- 
+  from_ine(year_2020) |> 
+  bind_rows(from_ine(year_2021)) |> 
+  bind_rows(from_ine(year_2022))
+```
+
+```{r}
+cpi |> 
+  pivot_wider()
 ```
