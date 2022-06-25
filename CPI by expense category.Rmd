@@ -1,0 +1,26 @@
+# Rate of change of CPI by expense category
+
+```{r}
+pacman::p_load(tidyverse, rio, here, janitor, gganimate)
+```
+
+```{r}
+test <- 
+  import('https://www.ine.gob.gt/sistema/uploads/2021/01/07/20210107181008hU1E5mBYrw7qBqdWxofaZsj4rULMDiJe.xls') |> 
+  as_tibble() |> 
+  clean_names() |> 
+  select(year = ano,
+         month = mes, 
+         id = codigo,
+         desc = descripcion,
+         cpi = rep) 
+```
+
+```{r}
+test |> 
+  filter(str_length(id) == 2) |> 
+  mutate(id = as.numeric(id)) |> 
+  mutate(desc = case_when(
+    id == 1
+  ))
+```
