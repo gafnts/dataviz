@@ -1,7 +1,7 @@
-# Rate of change of CPI by expense category
+# ¿Qué impulsa a la inflación en Guatemala?
 
 ```{r}
-pacman::p_load(tidyverse, rio, janitor, gganimate, grDevices)
+pacman::p_load(tidyverse, rio, janitor, gganimate, ggtext)
 ```
 
 ```{r}
@@ -58,41 +58,65 @@ cpi <-
   select(!id) |> 
   pivot_wider(names_from = desc, 
               values_from = cpi) |> 
-  mutate(across(where(is.numeric), ~ 100 * (log(.) - lag(log(.), 1)))) |> 
+  mutate(across(where(is.numeric), ~ (log(.) - lag(log(.), 1)))) |> 
   filter(year != 2019) |>
   pivot_longer(!c(year, month), 
                names_to = 'expense', 
                values_to = 'rate') |> 
   mutate(expense = as_factor(expense),
          period = as_factor(paste(month, year)),
-         label = paste0(round(rate, 2), '%'))
+         label = paste0(round(rate * 100, 2), '%'))
 ```
 
 ```{r}
-f1 <- "Nunito Sans Regular"
-f2 <- "Nunito Sans Light"
+reg = "Nunito Sans"
+bold = "Nunito Sans Bold"
+
+back = '#F2F2F2'
+text = '#0D0D0D'
+main = '#F23E2E'
 ```
 
 ```{r}
 cpi |> 
   filter(year == 2022 & month == 'Abril') |> 
   ggplot(aes(expense, rate)) +
-  geom_col() +
+  geom_col(fill = main, 
+           alpha = .85) +
   geom_text(aes(expense, rate, label = label), 
+            family = reg,
+            color = 'gray25',
+            size = 3,
             vjust = ifelse(cpi[325:336,]$rate < 0, 1.5, -0.5)) +
-  labs(title = '¿Qué impulsa a la inflación?',
-       subtitle = 'Mayo 2020') +
-  annotation_custom(grid::textGrob('Cambio intermensual en las categorías de gasto', 
-                                   x = .36, y = 1.05)) +
-  annotation_custom(grid::textGrob('del índice de precios al consumidor', 
-                                   x = .27, y = 1)) +
+  labs(title = "<b>¿Qué impulsa a la inflación en Guatemala?</b><br>
+    <span style = 'font-size:12pt'>Cambio intermensual en las categorías de gasto<br>del índice de precios al consumidor</span>",
+       subtitle = 'Mayo 2020',
+       caption = 'Datos: Instituto Nacional de Estadística') +
+  scale_y_continuous(labels = scales::percent) +
   coord_cartesian(clip = 'off') +
   theme(
+    text = element_text(family = reg, 
+                        color = text),
     axis.title.x = element_blank(),
     axis.title.y = element_blank(),
-    plot.subtitle = element_text(hjust = 1),
+    axis.ticks.length.x = unit(.3, 'line'),
+    axis.ticks.y = element_blank(),
+    plot.title = element_textbox_simple(
+      family = reg,
+      size = 15,
+      lineheight = 1,
+      padding = margin(5.5, 5.5, 5.5, 5.5),
+      margin = margin(0, 0, 5.5, 0)
+    ),
+    plot.title.position = "plot",
+    plot.subtitle = element_text(hjust = 1, color = main, family = reg),
+    plot.caption = element_text(margin = unit(c(2, 0, 0, 0), 'line')),
     axis.text.x = element_text(angle = 45, vjust = .9, hjust = 1),
-    plot.margin = unit(c(1.5, 1.5, 1.5, 1.5), "line")
+    panel.background = element_blank(),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.y = element_blank(),
+    plot.background = element_rect(fill = back, color = back),
+    plot.margin = unit(c(1.5, 1.5, 1.5, 1.5), 'line')
   )
 ```
 
@@ -100,21 +124,41 @@ cpi |>
 plot <- 
   cpi |> 
   ggplot(aes(expense, rate)) +
-  geom_col() +
+  geom_col(fill = main, 
+           alpha = .85) +
   geom_text(aes(expense, rate, label = label), 
+            family = reg,
+            color = 'gray25',
+            size = 3,
             vjust = ifelse(cpi$rate < 0, 1.5, -0.5)) +
-  labs(title = '¿Qué impulsa a la inflación?', 
-       subtitle = '{closest_state}') +
-  annotation_custom(grid::textGrob('Cambio intermensual en las categorías de gasto', 
-                                   x = .36, y = 1.05)) +
-  annotation_custom(grid::textGrob('del índice de precios al consumidor', 
-                                   x = .27, y = 1)) +
+  labs(title = "<b>¿Qué impulsa a la inflación en Guatemala?</b><br>
+    <span style = 'font-size:12pt'>Cambio intermensual en las categorías de gasto<br>del índice de precios al consumidor</span>",
+       subtitle = 'Mayo 2020',
+       caption = 'Datos: Instituto Nacional de Estadística') +
+  scale_y_continuous(labels = scales::percent) +
   coord_cartesian(clip = 'off') +
   theme(
+    text = element_text(family = reg, 
+                        color = text),
     axis.title.x = element_blank(),
     axis.title.y = element_blank(),
-    plot.subtitle = element_text(hjust = 1),
-    axis.text.x = element_text(angle = 45, vjust = .9, hjust = 1)
+    axis.ticks.length.x = unit(.3, 'line'),
+    axis.ticks.y = element_blank(),
+    plot.title = element_textbox_simple(
+      family = reg,
+      size = 15,
+      lineheight = 1,
+      padding = margin(5.5, 5.5, 5.5, 5.5),
+      margin = margin(0, 0, 5.5, 0)
+    ),
+    plot.subtitle = element_text(hjust = 1, color = main, family = reg),
+    plot.caption = element_text(margin = unit(c(2, 0, 0, 0), 'line')),
+    axis.text.x = element_text(angle = 45, vjust = .9, hjust = 1),
+    panel.background = element_blank(),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.y = element_blank(),
+    plot.background = element_rect(fill = back, color = back),
+    plot.margin = unit(c(1.5, 1.5, 1.5, 1.5), 'line')
   ) +
   transition_states(
     period,
