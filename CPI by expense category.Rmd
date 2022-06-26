@@ -4,6 +4,8 @@
 pacman::p_load(tidyverse, rio, janitor, gganimate, ggtext, showtext)
 ```
 
+#### Importando las bases de datos del INE
+
 ```{r}
 from_ine <- 
   function(path) {
@@ -52,6 +54,8 @@ cpi_raw <-
   bind_rows(from_ine(year_2022))
 ```
 
+#### Expresando a los índices en tasas de cambio intermensual
+
 ```{r}
 cpi <- 
   cpi_raw |> 
@@ -68,19 +72,23 @@ cpi <-
          label = paste0(round(rate * 100, 2), '%'))
 ```
 
+#### Colores y tipografía del gráfico
+
 ```{r}
-back = '#F2F2F2'
 text = '#0D0D0D'
 main = '#F23E2E'
+back = '#F2F2F2'
 
 font_add("Nunito Sans",
     regular = "NunitoSans-Regular.ttf",
-    bold = "NunitoSans-Black.ttf")
+    bold = "NunitoSans-Bold.ttf")
 
 font = "Nunito Sans"
 
 showtext_auto()
 ```
+
+#### Generando la visualización
 
 ```{r}
 cpi |> 
@@ -93,9 +101,9 @@ cpi |>
             color = 'gray25',
             size = 3,
             vjust = ifelse(cpi[325:336,]$rate < 0, 1.5, -0.5)) +
-  labs(title = "<b>**¿Qué impulsa a la inflación en Guatemala?**</b><br>
+  labs(title = "¿Qué impulsa a la inflación en Guatemala?<br><br>
     <span style = 'font-size:12pt'>Cambio intermensual en las categorías de gasto<br>del índice de precios al consumidor</span>",
-       subtitle = 'Mayo 2020',
+       subtitle = 'Abril 2022',
        caption = 'Datos: Instituto Nacional de Estadística') +
   scale_y_continuous(labels = scales::percent) +
   coord_cartesian(clip = 'off') +
@@ -108,16 +116,16 @@ cpi |>
     axis.ticks.y = element_blank(),
     plot.title = element_textbox_simple(
       family = font,
-      size = 15,
-      lineheight = 1,
-      padding = margin(5.5, 5.5, 5.5, 5.5),
-      margin = margin(0, 0, 5.5, 0)
+      size = 19,
+      lineheight = 0.7,
+      padding = margin(5.5, 5.5, 7, 5.5),
+      margin = margin(0, 0, 7, 0)
     ),
     plot.title.position = 'plot',
     plot.subtitle = element_text(hjust = 1, 
                                  family = font,
                                  color = main),
-    plot.caption = element_text(margin = unit(c(2, 0, 0, 0), 'line')),
+    plot.caption = element_text(margin = unit(c(2.3, 0, 0, 0), 'line')),
     axis.text.x = element_text(angle = 45, vjust = .9, hjust = 1),
     panel.background = element_blank(),
     panel.grid.major.x = element_blank(),
@@ -126,6 +134,8 @@ cpi |>
     plot.margin = unit(c(1.5, 1.5, 1.5, 1.5), 'line')
   )
 ```
+
+#### Generando la animación
 
 ```{r}
 plot <- 
@@ -138,7 +148,7 @@ plot <-
             color = 'gray25',
             size = 3,
             vjust = ifelse(cpi$rate < 0, 1.5, -0.5)) +
-  labs(title = "<b>¿Qué impulsa a la inflación en Guatemala?</b><br>
+  labs(title = "<b>**¿Qué impulsa a la inflación en Guatemala?**</b><br><br>
     <span style = 'font-size:12pt'>Cambio intermensual en las categorías de gasto<br>del índice de precios al consumidor</span>",
        subtitle = '{closest_state}',
        caption = 'Datos: Instituto Nacional de Estadística') +
@@ -153,16 +163,16 @@ plot <-
     axis.ticks.y = element_blank(),
     plot.title = element_textbox_simple(
       family = font,
-      size = 15,
-      lineheight = 1,
-      padding = margin(5.5, 5.5, 5.5, 5.5),
-      margin = margin(0, 0, 5.5, 0)
+      size = 19,
+      lineheight = 0.7,
+      padding = margin(5.5, 5.5, 7, 5.5),
+      margin = margin(0, 0, 7, 0)
     ),
     plot.title.position = 'plot',
     plot.subtitle = element_text(hjust = 1, 
                                  family = font,
                                  color = main),
-    plot.caption = element_text(margin = unit(c(2, 0, 0, 0), 'line')),
+    plot.caption = element_text(margin = unit(c(2.3, 0, 0, 0), 'line')),
     axis.text.x = element_text(angle = 45, vjust = .9, hjust = 1),
     panel.background = element_blank(),
     panel.grid.major.x = element_blank(),
