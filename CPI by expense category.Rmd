@@ -1,4 +1,4 @@
-# ¿Qué impulsa a la inflación en Guatemala?
+# ¿Qué impulsa la inflación en Guatemala?
 
 ```{r}
 pacman::p_load(tidyverse, rio, janitor, gganimate, ggtext, showtext)
@@ -72,23 +72,18 @@ cpi <-
          label = paste0(round(rate * 100, 2), '%'))
 ```
 
-#### Colores y tipografía del gráfico
+#### Colores y tipografía
 
 ```{r}
 text = '#0D0D0D'
 main = '#F23E2E'
 back = '#F2F2F2'
 
-font_add("Nunito Sans",
-    regular = "NunitoSans-Regular.ttf",
-    bold = "NunitoSans-Bold.ttf")
-
-font = "Nunito Sans"
-
+font_add_google('Nunito Sans', 'nunito')
 showtext_auto()
 ```
 
-#### Generando la visualización
+#### Gráfico estático: Verificando los aspectos estéticos de la visualización
 
 ```{r}
 cpi |> 
@@ -97,35 +92,34 @@ cpi |>
   geom_col(fill = main, 
            alpha = .85) +
   geom_text(aes(expense, rate, label = label), 
-            family = font,
+            family = 'nunito',
             color = 'gray25',
             size = 3,
             vjust = ifelse(cpi[325:336,]$rate < 0, 1.5, -0.5)) +
-  labs(title = "¿Qué impulsa a la inflación en Guatemala?<br><br>
-    <span style = 'font-size:12pt'>Cambio intermensual en las categorías de gasto<br>del índice de precios al consumidor</span>",
+  labs(title = "<span style = 'font-size: 29pt; color:#F23E2E'>—</span><br><b>¿Qué impulsa la inflación en Guatemala?</b><br><br>
+    <span style = 'font-size: 12pt; color:#414141'>Tasa de cambio intermensual por categoría de gasto<br>del índice de precios al consumidor</span>",
        subtitle = 'Abril 2022',
        caption = 'Datos: Instituto Nacional de Estadística') +
   scale_y_continuous(labels = scales::percent) +
   coord_cartesian(clip = 'off') +
   theme(
-    text = element_text(family = font,
-                        color = text),
+    text = element_text(color = text),
     axis.title.x = element_blank(),
     axis.title.y = element_blank(),
     axis.ticks.length.x = unit(.3, 'line'),
     axis.ticks.y = element_blank(),
     plot.title = element_textbox_simple(
-      family = font,
-      size = 19,
+      size = 20,
       lineheight = 0.7,
       padding = margin(5.5, 5.5, 7, 5.5),
       margin = margin(0, 0, 7, 0)
     ),
     plot.title.position = 'plot',
     plot.subtitle = element_text(hjust = 1, 
-                                 family = font,
+                                 family = 'nunito',
                                  color = main),
-    plot.caption = element_text(margin = unit(c(2.3, 0, 0, 0), 'line')),
+    plot.caption = element_text(color = '#414141',
+                                margin = unit(c(2.3, 0, 0, 0), 'line')),
     axis.text.x = element_text(angle = 45, vjust = .9, hjust = 1),
     panel.background = element_blank(),
     panel.grid.major.x = element_blank(),
@@ -144,35 +138,34 @@ plot <-
   geom_col(fill = main, 
            alpha = .85) +
   geom_text(aes(expense, rate, label = label), 
-            family = font,
+            family = 'nunito',
             color = 'gray25',
             size = 3,
             vjust = ifelse(cpi$rate < 0, 1.5, -0.5)) +
-  labs(title = "<b>**¿Qué impulsa a la inflación en Guatemala?**</b><br><br>
-    <span style = 'font-size:12pt'>Cambio intermensual en las categorías de gasto<br>del índice de precios al consumidor</span>",
+  labs(title = "<span style = 'font-size: 29pt; color:#F23E2E'>—</span><br><b>¿Qué impulsa la inflación en Guatemala?</b><br><br>
+    <span style = 'font-size: 12pt; color:#414141'>Tasa de cambio intermensual por categoría de gasto<br>del índice de precios al consumidor</span>",
        subtitle = '{closest_state}',
        caption = 'Datos: Instituto Nacional de Estadística') +
   scale_y_continuous(labels = scales::percent) +
   coord_cartesian(clip = 'off') +
   theme(
-    text = element_text(family = font,
-                        color = text),
+    text = element_text(color = text),
     axis.title.x = element_blank(),
     axis.title.y = element_blank(),
     axis.ticks.length.x = unit(.3, 'line'),
     axis.ticks.y = element_blank(),
     plot.title = element_textbox_simple(
-      family = font,
-      size = 19,
+      size = 20,
       lineheight = 0.7,
       padding = margin(5.5, 5.5, 7, 5.5),
       margin = margin(0, 0, 7, 0)
     ),
     plot.title.position = 'plot',
     plot.subtitle = element_text(hjust = 1, 
-                                 family = font,
+                                 family = 'nunito',
                                  color = main),
-    plot.caption = element_text(margin = unit(c(2.3, 0, 0, 0), 'line')),
+    plot.caption = element_text(color = '#414141',
+                                margin = unit(c(2.3, 0, 0, 0), 'line')),
     axis.text.x = element_text(angle = 45, vjust = .9, hjust = 1),
     panel.background = element_blank(),
     panel.grid.major.x = element_blank(),
