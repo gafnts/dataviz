@@ -1,7 +1,7 @@
 # Rate of change of CPI by expense category
 
 ```{r}
-pacman::p_load(tidyverse, rio, janitor, gganimate)
+pacman::p_load(tidyverse, rio, janitor, gganimate, grDevices)
 ```
 
 ```{r}
@@ -69,13 +69,31 @@ cpi <-
 ```
 
 ```{r}
+f1 <- "Nunito Sans Regular"
+f2 <- "Nunito Sans Light"
+```
+
+```{r}
 cpi |> 
   filter(year == 2022 & month == 'Abril') |> 
   ggplot(aes(expense, rate)) +
   geom_col() +
   geom_text(aes(expense, rate, label = label), 
             vjust = ifelse(cpi[325:336,]$rate < 0, 1.5, -0.5)) +
-  labs(subtitle = 'Mayo 2020')
+  labs(title = '¿Qué impulsa a la inflación?',
+       subtitle = 'Mayo 2020') +
+  annotation_custom(grid::textGrob('Cambio intermensual en las categorías de gasto', 
+                                   x = .36, y = 1.05)) +
+  annotation_custom(grid::textGrob('del índice de precios al consumidor', 
+                                   x = .27, y = 1)) +
+  coord_cartesian(clip = 'off') +
+  theme(
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    plot.subtitle = element_text(hjust = 1),
+    axis.text.x = element_text(angle = 45, vjust = .9, hjust = 1),
+    plot.margin = unit(c(1.5, 1.5, 1.5, 1.5), "line")
+  )
 ```
 
 ```{r}
@@ -85,7 +103,19 @@ plot <-
   geom_col() +
   geom_text(aes(expense, rate, label = label), 
             vjust = ifelse(cpi$rate < 0, 1.5, -0.5)) +
-  labs(subtitle = "{closest_state}") +
+  labs(title = '¿Qué impulsa a la inflación?', 
+       subtitle = '{closest_state}') +
+  annotation_custom(grid::textGrob('Cambio intermensual en las categorías de gasto', 
+                                   x = .36, y = 1.05)) +
+  annotation_custom(grid::textGrob('del índice de precios al consumidor', 
+                                   x = .27, y = 1)) +
+  coord_cartesian(clip = 'off') +
+  theme(
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    plot.subtitle = element_text(hjust = 1),
+    axis.text.x = element_text(angle = 45, vjust = .9, hjust = 1)
+  ) +
   transition_states(
     period,
     transition_length = 5,
@@ -96,10 +126,10 @@ plot <-
 
 animation <- 
   animate(plot, 
-          height = 6, width = 6, units = "in", res = 300,
-          nframes = 100, fps = 30, renderer = av_renderer())
+          height = 6, width = 6, units = 'in', res = 300,
+          nframes = 500, fps = 30, renderer = av_renderer())
 ```
 
 ```{r}
-anim_save("output.mp4", animation)
+anim_save('output.mp4', animation)
 ```
