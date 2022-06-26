@@ -1,7 +1,7 @@
 # ¿Qué impulsa a la inflación en Guatemala?
 
 ```{r}
-pacman::p_load(tidyverse, rio, janitor, gganimate, ggtext)
+pacman::p_load(tidyverse, rio, janitor, gganimate, ggtext, showtext)
 ```
 
 ```{r}
@@ -69,12 +69,17 @@ cpi <-
 ```
 
 ```{r}
-reg = "Nunito Sans"
-bold = "Nunito Sans Bold"
-
 back = '#F2F2F2'
 text = '#0D0D0D'
 main = '#F23E2E'
+
+font_add("Nunito Sans",
+    regular = "NunitoSans-Regular.ttf",
+    bold = "NunitoSans-Black.ttf")
+
+font = "Nunito Sans"
+
+showtext_auto()
 ```
 
 ```{r}
@@ -84,32 +89,34 @@ cpi |>
   geom_col(fill = main, 
            alpha = .85) +
   geom_text(aes(expense, rate, label = label), 
-            family = reg,
+            family = font,
             color = 'gray25',
             size = 3,
             vjust = ifelse(cpi[325:336,]$rate < 0, 1.5, -0.5)) +
-  labs(title = "<b>¿Qué impulsa a la inflación en Guatemala?</b><br>
+  labs(title = "<b>**¿Qué impulsa a la inflación en Guatemala?**</b><br>
     <span style = 'font-size:12pt'>Cambio intermensual en las categorías de gasto<br>del índice de precios al consumidor</span>",
        subtitle = 'Mayo 2020',
        caption = 'Datos: Instituto Nacional de Estadística') +
   scale_y_continuous(labels = scales::percent) +
   coord_cartesian(clip = 'off') +
   theme(
-    text = element_text(family = reg, 
+    text = element_text(family = font,
                         color = text),
     axis.title.x = element_blank(),
     axis.title.y = element_blank(),
     axis.ticks.length.x = unit(.3, 'line'),
     axis.ticks.y = element_blank(),
     plot.title = element_textbox_simple(
-      family = reg,
+      family = font,
       size = 15,
       lineheight = 1,
       padding = margin(5.5, 5.5, 5.5, 5.5),
       margin = margin(0, 0, 5.5, 0)
     ),
-    plot.title.position = "plot",
-    plot.subtitle = element_text(hjust = 1, color = main, family = reg),
+    plot.title.position = 'plot',
+    plot.subtitle = element_text(hjust = 1, 
+                                 family = font,
+                                 color = main),
     plot.caption = element_text(margin = unit(c(2, 0, 0, 0), 'line')),
     axis.text.x = element_text(angle = 45, vjust = .9, hjust = 1),
     panel.background = element_blank(),
@@ -127,31 +134,34 @@ plot <-
   geom_col(fill = main, 
            alpha = .85) +
   geom_text(aes(expense, rate, label = label), 
-            family = reg,
+            family = font,
             color = 'gray25',
             size = 3,
             vjust = ifelse(cpi$rate < 0, 1.5, -0.5)) +
   labs(title = "<b>¿Qué impulsa a la inflación en Guatemala?</b><br>
     <span style = 'font-size:12pt'>Cambio intermensual en las categorías de gasto<br>del índice de precios al consumidor</span>",
-       subtitle = 'Mayo 2020',
+       subtitle = '{closest_state}',
        caption = 'Datos: Instituto Nacional de Estadística') +
   scale_y_continuous(labels = scales::percent) +
   coord_cartesian(clip = 'off') +
   theme(
-    text = element_text(family = reg, 
+    text = element_text(family = font,
                         color = text),
     axis.title.x = element_blank(),
     axis.title.y = element_blank(),
     axis.ticks.length.x = unit(.3, 'line'),
     axis.ticks.y = element_blank(),
     plot.title = element_textbox_simple(
-      family = reg,
+      family = font,
       size = 15,
       lineheight = 1,
       padding = margin(5.5, 5.5, 5.5, 5.5),
       margin = margin(0, 0, 5.5, 0)
     ),
-    plot.subtitle = element_text(hjust = 1, color = main, family = reg),
+    plot.title.position = 'plot',
+    plot.subtitle = element_text(hjust = 1, 
+                                 family = font,
+                                 color = main),
     plot.caption = element_text(margin = unit(c(2, 0, 0, 0), 'line')),
     axis.text.x = element_text(angle = 45, vjust = .9, hjust = 1),
     panel.background = element_blank(),
@@ -166,7 +176,7 @@ plot <-
     state_length = 1) +
   enter_grow(size = 1) + 
   exit_shrink(size = 2) +
-  ease_aes('elastic-in-out')
+  ease_aes('circular-in-out')
 
 animation <- 
   animate(plot, 
@@ -175,5 +185,5 @@ animation <-
 ```
 
 ```{r}
-anim_save('output.mp4', animation)
+anim_save('animation.mp4', animation)
 ```
