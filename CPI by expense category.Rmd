@@ -176,7 +176,7 @@ plot <-
   transition_states(
     period,
     transition_length = 5,
-    state_length = 1) +
+    state_length = 2) +
   enter_grow(size = 1) + 
   exit_shrink(size = 2) +
   ease_aes('circular-in-out')
@@ -184,7 +184,7 @@ plot <-
 animation <- 
   animate(plot, 
           height = 6, width = 6, units = 'in', res = 300,
-          nframes = 500, fps = 30, renderer = av_renderer())
+          nframes = 750, fps = 30, renderer = av_renderer())
 ```
 
 ```{r}
